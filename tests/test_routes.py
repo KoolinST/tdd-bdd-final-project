@@ -178,3 +178,20 @@ class TestProductRoutes(TestCase):
         data = response.get_json()
         # logging.debug("data = %s", data)
         return len(data)
+
+    def test_get_product(self):
+        """It should get a single product"""
+        # get the id of a product
+        product = self._create_products(1)[0]
+        response = self.client.get(f"{BASE_URL}/{product.id}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(data["name"], product.name)
+
+    def test_get_product_not_found(self):
+        """It should not Get the product that not found"""
+        # get the id of a product
+        response = self.client.get(f"{BASE_URL}/0")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        data = response.get_json()
+        self.assertIn("was not found", data["message"])
